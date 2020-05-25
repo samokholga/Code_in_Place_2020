@@ -24,19 +24,24 @@ class AngryBird(object):
         self.bird = ImageTk.PhotoImage(file="pics/Bird.png")
         self.target = ImageTk.PhotoImage(file="pics/Target.png")
         self.slingshot_back_img = ImageTk.PhotoImage(file="pics/Rogatka_right.png")
+        self.slingshot_back2_img = ImageTk.PhotoImage(file="pics/Rogatka_right2.png")
         self.slingshot_front_img = ImageTk.PhotoImage(file="pics/Rogatka_left.png")
         self.mouse_coordinates = {}
         self.v0 = None
         self.sin_alpha = None
         self.cos_alpha = None
         self.goals = 0
+        self.attempts = 0
         self.ball_coords = {}
         self.canvas = self.make_canvas()
         self.aim = self.make_aim()
-        self.slingshot_front = self.make_slingshot_back()
+        self.slingshot_back = self.make_slingshot_back()
+        self.strap_back = self.make_strap_back()
         self.ball = self.make_ball()
         self.slingshot_front = self.make_slingshot_front()
+
         self.strap = self.make_strap()
+        #self.strap_back = self.make_strap_back()
         self.text = self.meter()
         # self.meter()
 
@@ -71,6 +76,8 @@ class AngryBird(object):
         print('on click release')
         self.mouse_pressed = False
         self.canvas.coords(self.strap, STARTING_X + 20, STARTING_Y + 18, STARTING_X + 5, STARTING_Y + 30)
+        self.canvas.itemconfig(self.slingshot_back, image=self.slingshot_back_img)
+        self.canvas.coords(self.strap_back, STARTING_X - 4000, STARTING_Y + 1200, STARTING_X - 4000, STARTING_Y + 1200)
         # self.mouse_released = True
 
         #print(self.mouse_coordinates, self.is_clicked_on_ball)
@@ -111,13 +118,14 @@ class AngryBird(object):
 
     def follow_mouse(self):
         print('follow mouse')
+        self.canvas.itemconfig(self.slingshot_back, image=self.slingshot_back2_img)
         if self.mouse_is_on_the_ball():
             while self.mouse_pressed:
                 x = self.x_motion
                 y = self.y_motion
                 self.canvas.moveto(self.ball, x, y)
                 self.canvas.coords(self.strap, STARTING_X+20, STARTING_Y+18, x+5, y+30)
-                #self.canvas.itemconfig(self.strap) #------------------------------!!!!!!
+                self.canvas.coords(self.strap_back, STARTING_X+40, STARTING_Y+12, x+45, y+20)
                 self.canvas.update()
                 time.sleep(1 / 50)
 
@@ -188,8 +196,14 @@ class AngryBird(object):
     def make_strap(self):
         self.get_ball_coords()
         strap = self.canvas.create_line(STARTING_X+20, STARTING_Y+18, self.ball_coords['b_x1']+5, self.ball_coords['b_y1']+30,
-                                        fill = 'brown', width=10)
+                                        fill = '#69402c', width=9)
         return strap
+    def make_strap_back(self):
+        #self.get_ball_coords()
+        strap = self.canvas.create_line(STARTING_X+40, STARTING_Y+12, STARTING_X+40, STARTING_Y+12,
+                                        fill='#69402c', width=6) #self.ball_coords['b_x1'] + 5, self.ball_coords['b_y1'] + 30
+        return strap
+
 
     def make_canvas(self):
         self.top.minsize(WIDTH, HEIGH)
